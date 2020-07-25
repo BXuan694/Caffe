@@ -21,4 +21,4 @@ Check out the [Official project site](http://caffe.berkeleyvision.org) for all t
 Original version of Caffe is released under the [BSD 2-Clause license](https://github.com/BVLC/caffe/blob/master/LICENSE).
 The BAIR/BVLC reference models are released for unrestricted use.
 
-I have made and will make some modification of addition in the future for my own uncommercial use of just interests.
+I have made and will make some modification or addition in the future for my own uncommercial use of just interests.
