@@ -4,7 +4,7 @@
 set -e
 
 EXAMPLE=examples/mnist
-DATA=data/mnist
+DATA=$DATA_ROOT/mnist
 BUILD=build/examples/mnist
 
 BACKEND="lmdb"

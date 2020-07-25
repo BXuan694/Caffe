@@ -298,20 +298,17 @@ endif
 endif
 
 
-# BLAS configuration (default = ATLAS)
-BLAS ?= atlas
+# BLAS configuration (default = OpenBLAS)
+BLAS ?= open
 ifeq ($(BLAS), mkl)
-	# MKL
 	LIBRARIES += mkl_rt
 	COMMON_FLAGS += -DUSE_MKL
 	MKLROOT ?= /opt/intel/mkl
 	BLAS_INCLUDE ?= $(MKLROOT)/include
 	BLAS_LIB ?= $(MKLROOT)/lib $(MKLROOT)/lib/intel64
 else ifeq ($(BLAS), open)
-	# OpenBLAS
 	LIBRARIES += openblas
 else
-	# ATLAS
 	ifeq ($(LINUX), 1)
 		ifeq ($(BLAS), atlas)
 			# Linux simply has cblas and atlas

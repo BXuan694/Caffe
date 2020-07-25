@@ -3,7 +3,7 @@
 set -e
 
 EXAMPLE=examples/cifar10
-DATA=data/cifar10
+DATA=$DATA_ROOT/cifar10
 DBTYPE=lmdb
 
 echo "Creating $DBTYPE..."

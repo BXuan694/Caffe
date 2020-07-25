@@ -14,9 +14,13 @@ We will assume that you have Caffe successfully compiled. If not, please refer t
 
 You will first need to download and convert the data format from the MNIST website. To do this, simply run the following commands:
 
-    cd $CAFFE_ROOT
-    ./data/mnist/get_mnist.sh
-    ./examples/mnist/create_mnist.sh
+```bash
+export DATA_ROOT=/pathToDatasets/
+cd $DATA_ROOT
+./mnist/get_mnist.sh
+cd $CAFFE_ROOT
+./examples/mnist/create_mnist.sh
+```
 
 If it complains that `wget` or `gunzip` are not installed, you need to install them respectively. After running the script there should be two datasets, `mnist_train_lmdb`, and `mnist_test_lmdb`.
 
