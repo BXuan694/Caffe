@@ -207,25 +207,6 @@ ALL_BUILD_DIRS := $(sort $(BUILD_DIR) $(addprefix $(BUILD_DIR)/, $(SRC_DIRS)) \
 	$(DISTRIBUTE_SUBDIRS) $(PROTO_BUILD_INCLUDE_DIR))
 
 ##############################
-# Set directory for Doxygen-generated documentation
-##############################
-DOXYGEN_CONFIG_FILE ?= ./.Doxyfile
-# should be the same as OUTPUT_DIRECTORY in the .Doxyfile
-DOXYGEN_OUTPUT_DIR ?= ./doxygen
-DOXYGEN_COMMAND ?= doxygen
-# All the files that might have Doxygen documentation.
-DOXYGEN_SOURCES := $(shell find \
-	src/$(PROJECT) \
-	include/$(PROJECT) \
-	python/ \
-	examples \
-	tools \
-	-name "*.cpp" -or -name "*.hpp" -or -name "*.cu" -or -name "*.cuh" -or \
-        -name "*.py" -or -name "*.m")
-DOXYGEN_SOURCES += $(DOXYGEN_CONFIG_FILE)
-
-
-##############################
 # Configure build
 ##############################
 
@@ -350,7 +331,6 @@ PYTHON_LDFLAGS := $(LDFLAGS) $(foreach library,$(PYTHON_LIBRARIES),-l$(library))
 # * Recursive with the exception that symbolic links are never followed, per the
 # default behavior of 'find'.
 SUPERCLEAN_EXTS := .so .a .o .bin .testbin .pb.cc .pb.h _pb2.py .cuo
-
 # Set the sub-targets of the 'everything' target.
 EVERYTHING_TARGETS := all py$(PROJECT) test warn lint
 
@@ -374,12 +354,6 @@ lint: $(EMPTY_LINT_REPORT)
 
 lintclean:
 	@ $(RM) -r $(LINT_OUTPUT_DIR) $(EMPTY_LINT_REPORT) $(NONEMPTY_LINT_REPORT)
-
-docs: $(DOXYGEN_OUTPUT_DIR)
-	@ cd ./docs ; ln -sfn ../$(DOXYGEN_OUTPUT_DIR)/html doxygen
-
-$(DOXYGEN_OUTPUT_DIR): $(DOXYGEN_CONFIG_FILE) $(DOXYGEN_SOURCES)
-	$(DOXYGEN_COMMAND) $(DOXYGEN_CONFIG_FILE)
 
 $(EMPTY_LINT_REPORT): $(LINT_OUTPUTS) | $(BUILD_DIR)
 	@ cat $(LINT_OUTPUTS) > $@
@@ -406,7 +380,7 @@ tools: $(TOOL_BINS) $(TOOL_BIN_LINKS)
 
 examples: $(EXAMPLE_BINS)
 
-py$(PROJECT): py
+py$(PROJECT): py pytest
 
 py: $(PY$(PROJECT)_SO) $(PROTO_GEN_PY)
 
