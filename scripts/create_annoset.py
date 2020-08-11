@@ -101,7 +101,7 @@ if __name__ == "__main__":
     if not os.path.exists(label_map_file):
       print("label map file: {} does not exist".format(label_map_file))
       sys.exit()
-    #label_map = caffe_pb2.LabelMap()
+    label_map = caffe_pb2.LabelMap()
     lmf = open(label_map_file, "r")
     try:
       text_format.Merge(str(lmf.read()), label_map)

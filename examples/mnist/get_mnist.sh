@@ -2,6 +2,7 @@
 # This scripts downloads the mnist data and unzips it.
 
 DIR=$DATA_ROOT/mnist
+mkdir  $DIR
 cd "$DIR"
 echo "$DIR"
 echo "Downloading..."

@@ -29,6 +29,8 @@ class TestDraw(unittest.TestCase):
         for filename in getFilenames():
             net = caffe_pb2.NetParameter()
             with open(filename) as infile:
+                print(infile.read())
+                print(net)
                 text_format.Merge(infile.read(), net)
             caffe.draw.draw_net(net, 'LR')
 

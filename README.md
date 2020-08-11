@@ -22,3 +22,27 @@ Original version of Caffe is released under the [BSD 2-Clause license](https://g
 The BAIR/BVLC reference models are released for unrestricted use.
 
 I have made and will make some modification or addition in the future for my own uncommercial use of just interests.
+
+## Install
+
+See [here](https://www.cnblogs.com/xypf/articles/13377666.html).
+
+To build, use
+```sh
+make all -j4
+make test -j4
+make runtest -j4
+```
+
+To build pycaffe, please, make sure to  set default python as python3, and install pydot and graphviz:
+```sh
+sudo pip3 install pydot
+sudo apt install graphviz
+```
+
+Then, run with:
+```sh
+./makepy.sh
+make pytest -j4
+```
+

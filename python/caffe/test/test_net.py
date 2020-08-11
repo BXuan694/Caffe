@@ -87,7 +87,7 @@ class TestNet(unittest.TestCase):
           manual_forward.append(dot+self.net.params['ip'][1].data);
         manual_forward=np.array(manual_forward);
 
-        np.testing.assert_allclose(ip_blob.data,manual_forward,rtol=1e-3);
+        np.testing.assert_allclose(ip_blob.data,manual_forward,rtol=1e-2);
 
     def test_backward_start_end(self):
         conv_blob=self.net.blobs['conv'];
@@ -106,7 +106,7 @@ class TestNet(unittest.TestCase):
         manual_backward=np.array(manual_backward);
         manual_backward=manual_backward.reshape(conv_blob.data.shape);
 
-        np.testing.assert_allclose(conv_blob.diff,manual_backward,rtol=1e-3);
+        np.testing.assert_allclose(conv_blob.diff,manual_backward,rtol=1e-2);
 
     def test_clear_param_diffs(self):
         # Run a forward/backward step to have non-zero diffs
