@@ -12,8 +12,8 @@ enum Mode { READ, WRITE, NEW };
 
 class Cursor {
  public:
-  Cursor() { }
-  virtual ~Cursor() { }
+  Cursor() {}
+  virtual ~Cursor() {}
   virtual void SeekToFirst() = 0;
   virtual void Next() = 0;
   virtual string key() = 0;
@@ -24,9 +24,9 @@ class Cursor {
 };
 
 class Transaction {
- public:
-  Transaction() { }
-  virtual ~Transaction() { }
+public:
+  Transaction() {}
+  virtual ~Transaction() {}
   virtual void Put(const string& key, const string& value) = 0;
   virtual void Commit() = 0;
 
@@ -34,9 +34,9 @@ class Transaction {
 };
 
 class DB {
- public:
-  DB() { }
-  virtual ~DB() { }
+public:
+  DB() {}
+  virtual ~DB() {}
   virtual void Open(const string& source, Mode mode) = 0;
   virtual void Close() = 0;
   virtual Cursor* NewCursor() = 0;
@@ -48,7 +48,6 @@ class DB {
 DB* GetDB(DataParameter::DB backend);
 DB* GetDB(const string& backend);
 
-}  // namespace db
-}  // namespace caffe
-
-#endif  // CAFFE_UTIL_DB_HPP
+}
+}
+#endif

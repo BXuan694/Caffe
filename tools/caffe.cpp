@@ -71,13 +71,14 @@ class __Registerer_##func { \
 __Registerer_##func g_registerer_##func; \
 }
 
-static BrewFunction GetBrewFunction(const caffe::string& name) {
+static BrewFunction GetBrewFunction(const caffe::string& name)
+{
   if (g_brew_map.count(name)) {
     return g_brew_map[name];
-  } else {
+  } 
+  else {
     LOG(ERROR) << "Available caffe actions:";
-    for (BrewMap::iterator it = g_brew_map.begin();
-         it != g_brew_map.end(); ++it) {
+    for (BrewMap::iterator it = g_brew_map.begin(); it != g_brew_map.end(); ++it) {
       LOG(ERROR) << "\t" << it->first;
     }
     LOG(FATAL) << "Unknown action: " << name;
@@ -86,7 +87,8 @@ static BrewFunction GetBrewFunction(const caffe::string& name) {
 }
 
 // Parse GPU ids or use all available devices
-static void get_gpus(vector<int>* gpus) {
+static void get_gpus(vector<int>* gpus)
+{
   if (FLAGS_gpu == "all") {
     int count = 0;
 #ifndef CPU_ONLY
@@ -97,19 +99,22 @@ static void get_gpus(vector<int>* gpus) {
     for (int i = 0; i < count; ++i) {
       gpus->push_back(i);
     }
-  } else if (FLAGS_gpu.size()) {
+  } 
+  else if (FLAGS_gpu.size()) {
     vector<string> strings;
     boost::split(strings, FLAGS_gpu, boost::is_any_of(","));
     for (int i = 0; i < strings.size(); ++i) {
       gpus->push_back(boost::lexical_cast<int>(strings[i]));
     }
-  } else {
+  } 
+  else {
     CHECK_EQ(gpus->size(), 0);
   }
 }
 
 // Parse phase from flags
-caffe::Phase get_phase_from_flags(caffe::Phase default_value) {
+caffe::Phase get_phase_from_flags(caffe::Phase default_value)
+{
   if (FLAGS_phase == "")
     return default_value;
   if (FLAGS_phase == "TRAIN")
@@ -121,7 +126,8 @@ caffe::Phase get_phase_from_flags(caffe::Phase default_value) {
 }
 
 // Parse stages from flags
-vector<string> get_stages_from_flags() {
+vector<string> get_stages_from_flags()
+{
   vector<string> stages;
   boost::split(stages, FLAGS_stage, boost::is_any_of(","));
   return stages;
@@ -177,7 +183,8 @@ caffe::SolverAction::Enum GetRequestedAction(
 }
 
 // Train / Finetune a model.
-int train() {
+int train()
+{
   CHECK_GT(FLAGS_solver.size(), 0) << "Need a solver definition to train.";
   CHECK(!FLAGS_snapshot.size() || !FLAGS_weights.size())
       << "Give a snapshot to resume training or weights to finetune "
@@ -261,9 +268,9 @@ int train() {
 }
 RegisterBrewFunction(train);
 
-
 // Test: score a model.
-int test() {
+int test() 
+{
   CHECK_GT(FLAGS_model.size(), 0) << "Need a model definition to score.";
   CHECK_GT(FLAGS_weights.size(), 0) << "Need model weights to score.";
   vector<string> stages = get_stages_from_flags();
@@ -334,9 +341,9 @@ int test() {
 }
 RegisterBrewFunction(test);
 
-
 // Time: benchmark the execution time of a model.
-int time() {
+int time()
+{
   CHECK_GT(FLAGS_model.size(), 0) << "Need a model definition to time.";
   caffe::Phase phase = get_phase_from_flags(caffe::TRAIN);
   vector<string> stages = get_stages_from_flags();
@@ -452,7 +459,8 @@ int main(int argc, char** argv) {
       return 1;
     }
 #endif
-  } else {
+  } 
+  else {
     gflags::ShowUsageWithFlagsRestrict(argv[0], "tools/caffe");
   }
 }

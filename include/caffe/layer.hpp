@@ -31,24 +31,24 @@ namespace caffe {
  */
 template <typename Dtype>
 class Layer {
- public:
+public:
   /**
    * You should not implement your own constructor. Any set up code should go
    * to SetUp(), where the dimensions of the bottom blobs are provided to the
    * layer.
    */
-  explicit Layer(const LayerParameter& param)
-    : layer_param_(param) {
-      // Set phase and copy blobs (if there are any).
-      phase_ = param.phase();
-      if (layer_param_.blobs_size() > 0) {
-        blobs_.resize(layer_param_.blobs_size());
-        for (int i = 0; i < layer_param_.blobs_size(); ++i) {
-          blobs_[i].reset(new Blob<Dtype>());
-          blobs_[i]->FromProto(layer_param_.blobs(i));
-        }
+  explicit Layer(const LayerParameter &param):layer_param_(param)
+  {
+    // Set phase and copy blobs (if there are any).
+    phase_ = param.phase();
+    if (layer_param_.blobs_size() > 0) {
+      blobs_.resize(layer_param_.blobs_size());
+      for (int i = 0; i < layer_param_.blobs_size(); ++i) {
+        blobs_[i].reset(new Blob<Dtype>());
+        blobs_[i]->FromProto(layer_param_.blobs(i));
       }
     }
+  }
   virtual ~Layer() {}
 
   /**
@@ -64,8 +64,8 @@ class Layer {
    * Sets up the loss weight multiplier blobs for any non-zero loss weights.
    * This method may not be overridden.
    */
-  void SetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {
+  void SetUp(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top)
+  {
     CheckBlobCounts(bottom, top);
     LayerSetUp(bottom, top);
     Reshape(bottom, top);
@@ -88,8 +88,7 @@ class Layer {
    * <code>Reshape</code>, which will be called before the forward pass to
    * adjust the top blob sizes.
    */
-  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top) {}
 
   /**
    * @brief Adjust the shapes of top blobs and internal buffers to accommodate
@@ -103,8 +102,7 @@ class Layer {
    * and making any other necessary adjustments so that the layer can
    * accommodate the bottom blobs.
    */
-  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) = 0;
+  virtual void Reshape(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top) = 0;
 
   /**
    * @brief Given the bottom blobs, compute the top blobs and the loss.
@@ -123,8 +121,7 @@ class Layer {
    *
    * Your layer should implement Forward_cpu and (optionally) Forward_gpu.
    */
-  inline Dtype Forward(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
+  inline Dtype Forward(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top);
 
   /**
    * @brief Given the top blob error gradients, compute the bottom blob error
@@ -147,39 +144,37 @@ class Layer {
    *
    * Your layer should implement Backward_cpu and (optionally) Backward_gpu.
    */
-  inline void Backward(const vector<Blob<Dtype>*>& top,
-      const vector<bool>& propagate_down,
-      const vector<Blob<Dtype>*>& bottom);
+  inline void Backward(const vector<Blob<Dtype>*> &top, const vector<bool> &propagate_down, const vector<Blob<Dtype>*> &bottom);
 
   /**
    * @brief Returns the vector of learnable parameter blobs.
    */
-  vector<shared_ptr<Blob<Dtype> > >& blobs() {
-    return blobs_;
-  }
+  vector<shared_ptr<Blob<Dtype> > > &blobs() {return blobs_;}
 
   /**
    * @brief Returns the layer parameter.
    */
-  const LayerParameter& layer_param() const { return layer_param_; }
+  const LayerParameter &layer_param() const {return layer_param_;}
 
   /**
    * @brief Writes the layer parameter to a protocol buffer
    */
-  virtual void ToProto(LayerParameter* param, bool write_diff = false);
+  virtual void ToProto(LayerParameter *param, bool write_diff = false);
 
   /**
    * @brief Returns the scalar loss associated with a top blob at a given index.
    */
-  inline Dtype loss(const int top_index) const {
+  inline Dtype loss(const int top_index) const
+  {
     return (loss_.size() > top_index) ? loss_[top_index] : Dtype(0);
   }
 
   /**
    * @brief Sets the loss associated with a top blob at a given index.
    */
-  inline void set_loss(const int top_index, const Dtype value) {
-    if (loss_.size() <= top_index) {
+  inline void set_loss(const int top_index, const Dtype value)
+  {
+    if(loss_.size() <= top_index) {
       loss_.resize(top_index + 1, Dtype(0));
     }
     loss_[top_index] = value;
@@ -188,7 +183,7 @@ class Layer {
   /**
    * @brief Returns the layer type.
    */
-  virtual inline const char* type() const { return ""; }
+  virtual inline const char* type() const {return "";}
 
   /**
    * @brief Returns the exact number of bottom blobs required by the layer,
@@ -197,7 +192,7 @@ class Layer {
    * This method should be overridden to return a non-negative value if your
    * layer expects some exact number of bottom blobs.
    */
-  virtual inline int ExactNumBottomBlobs() const { return -1; }
+  virtual inline int ExactNumBottomBlobs() const {return -1;}
   /**
    * @brief Returns the minimum number of bottom blobs required by the layer,
    *        or -1 if no minimum number is required.
@@ -205,7 +200,7 @@ class Layer {
    * This method should be overridden to return a non-negative value if your
    * layer expects some minimum number of bottom blobs.
    */
-  virtual inline int MinBottomBlobs() const { return -1; }
+  virtual inline int MinBottomBlobs() const {return -1;}
   /**
    * @brief Returns the maximum number of bottom blobs required by the layer,
    *        or -1 if no maximum number is required.
@@ -213,7 +208,7 @@ class Layer {
    * This method should be overridden to return a non-negative value if your
    * layer expects some maximum number of bottom blobs.
    */
-  virtual inline int MaxBottomBlobs() const { return -1; }
+  virtual inline int MaxBottomBlobs() const {return -1;}
   /**
    * @brief Returns the exact number of top blobs required by the layer,
    *        or -1 if no exact number is required.
@@ -221,7 +216,7 @@ class Layer {
    * This method should be overridden to return a non-negative value if your
    * layer expects some exact number of top blobs.
    */
-  virtual inline int ExactNumTopBlobs() const { return -1; }
+  virtual inline int ExactNumTopBlobs() const {return -1;}
   /**
    * @brief Returns the minimum number of top blobs required by the layer,
    *        or -1 if no minimum number is required.
@@ -229,7 +224,7 @@ class Layer {
    * This method should be overridden to return a non-negative value if your
    * layer expects some minimum number of top blobs.
    */
-  virtual inline int MinTopBlobs() const { return -1; }
+  virtual inline int MinTopBlobs() const {return -1;}
   /**
    * @brief Returns the maximum number of top blobs required by the layer,
    *        or -1 if no maximum number is required.
@@ -237,7 +232,7 @@ class Layer {
    * This method should be overridden to return a non-negative value if your
    * layer expects some maximum number of top blobs.
    */
-  virtual inline int MaxTopBlobs() const { return -1; }
+  virtual inline int MaxTopBlobs() const {return -1;}
   /**
    * @brief Returns true if the layer requires an equal number of bottom and
    *        top blobs.
@@ -245,7 +240,7 @@ class Layer {
    * This method should be overridden to return true if your layer expects an
    * equal number of bottom and top blobs.
    */
-  virtual inline bool EqualNumBottomTopBlobs() const { return false; }
+  virtual inline bool EqualNumBottomTopBlobs() const {return false;}
 
   /**
    * @brief Return whether "anonymous" top blobs are created automatically
@@ -255,7 +250,7 @@ class Layer {
    * blobs to fulfill the requirement specified by ExactNumTopBlobs() or
    * MinTopBlobs().
    */
-  virtual inline bool AutoTopBlobs() const { return false; }
+  virtual inline bool AutoTopBlobs() const {return false;}
 
   /**
    * @brief Return whether to allow force_backward for a given bottom blob
@@ -276,7 +271,8 @@ class Layer {
    * You can safely ignore false values and always compute gradients
    * for all parameters, but possibly with wasteful computation.
    */
-  inline bool param_propagate_down(const int param_id) {
+  inline bool param_propagate_down(const int param_id)
+  {
     return (param_propagate_down_.size() > param_id) ?
         param_propagate_down_[param_id] : false;
   }
@@ -284,15 +280,15 @@ class Layer {
    * @brief Sets whether the layer should compute gradients w.r.t. a
    *        parameter at a particular index given by param_id.
    */
-  inline void set_param_propagate_down(const int param_id, const bool value) {
+  inline void set_param_propagate_down(const int param_id, const bool value)
+  {
     if (param_propagate_down_.size() <= param_id) {
       param_propagate_down_.resize(param_id + 1, true);
     }
     param_propagate_down_[param_id] = value;
   }
 
-
- protected:
+protected:
   /** The protobuf that stores the layer parameters */
   LayerParameter layer_param_;
   /** The phase: TRAIN or TEST */
@@ -307,14 +303,13 @@ class Layer {
   vector<Dtype> loss_;
 
   /** @brief Using the CPU device, compute the layer output. */
-  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) = 0;
+  virtual void Forward_cpu(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top) = 0;
   /**
    * @brief Using the GPU device, compute the layer output.
    *        Fall back to Forward_cpu() if unavailable.
    */
-  virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {
+  virtual void Forward_gpu(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top) 
+  {
     // LOG(WARNING) << "Using CPU code as backup.";
     return Forward_cpu(bottom, top);
   }
@@ -323,17 +318,14 @@ class Layer {
    * @brief Using the CPU device, compute the gradients for any parameters and
    *        for the bottom blobs if propagate_down is true.
    */
-  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
-      const vector<bool>& propagate_down,
-      const vector<Blob<Dtype>*>& bottom) = 0;
+  virtual void Backward_cpu(const vector<Blob<Dtype>*> &top, const vector<bool> &propagate_down, const vector<Blob<Dtype>*> &bottom) = 0;
   /**
    * @brief Using the GPU device, compute the gradients for any parameters and
    *        for the bottom blobs if propagate_down is true.
    *        Fall back to Backward_cpu() if unavailable.
    */
-  virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
-      const vector<bool>& propagate_down,
-      const vector<Blob<Dtype>*>& bottom) {
+  virtual void Backward_gpu(const vector<Blob<Dtype>*> &top, const vector<bool> &propagate_down, const vector<Blob<Dtype>*> &bottom)
+  {
     // LOG(WARNING) << "Using CPU code as backup.";
     Backward_cpu(top, propagate_down, bottom);
   }
@@ -343,8 +335,8 @@ class Layer {
    * and top Blobs provided as input match the expected numbers specified by
    * the {ExactNum,Min,Max}{Bottom,Top}Blobs() functions.
    */
-  virtual void CheckBlobCounts(const vector<Blob<Dtype>*>& bottom,
-                               const vector<Blob<Dtype>*>& top) {
+  virtual void CheckBlobCounts(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top)
+  {
     if (ExactNumBottomBlobs() >= 0) {
       CHECK_EQ(ExactNumBottomBlobs(), bottom.size())
           << type() << " Layer takes " << ExactNumBottomBlobs()
@@ -377,8 +369,7 @@ class Layer {
     }
     if (EqualNumBottomTopBlobs()) {
       CHECK_EQ(bottom.size(), top.size())
-          << type() << " Layer produces one top blob as output for each "
-          << "bottom blob input.";
+          << type() << " Layer produces one top blob as output for each bottom blob input.";
     }
   }
 
@@ -386,14 +377,13 @@ class Layer {
    * Called by SetUp to initialize the weights associated with any top blobs in
    * the loss function. Store non-zero loss weights in the diff blob.
    */
-  inline void SetLossWeights(const vector<Blob<Dtype>*>& top) {
+  inline void SetLossWeights(const vector<Blob<Dtype>*> &top) {
     const int num_loss_weights = layer_param_.loss_weight_size();
-    if (num_loss_weights) {
-      CHECK_EQ(top.size(), num_loss_weights) << "loss_weight must be "
-          "unspecified or specified once per top blob.";
-      for (int top_id = 0; top_id < top.size(); ++top_id) {
+    if(num_loss_weights) {
+      CHECK_EQ(top.size(), num_loss_weights) << "loss_weight must be unspecified or specified once per top blob.";
+      for(int top_id = 0; top_id < top.size(); ++top_id) {
         const Dtype loss_weight = layer_param_.loss_weight(top_id);
-        if (loss_weight == Dtype(0)) { continue; }
+        if(loss_weight == Dtype(0)) { continue; }
         this->set_loss(top_id, loss_weight);
         const int count = top[top_id]->count();
         Dtype* loss_multiplier = top[top_id]->mutable_cpu_diff();
@@ -402,7 +392,7 @@ class Layer {
     }
   }
 
- private:
+private:
   DISABLE_COPY_AND_ASSIGN(Layer);
 };  // class Layer
 
@@ -410,8 +400,7 @@ class Layer {
 // gpu specific implementations instead, and should not change these
 // functions.
 template <typename Dtype>
-inline Dtype Layer<Dtype>::Forward(const vector<Blob<Dtype>*>& bottom,
-    const vector<Blob<Dtype>*>& top) {
+inline Dtype Layer<Dtype>::Forward(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top) {
   Dtype loss = 0;
   Reshape(bottom, top);
   switch (Caffe::mode()) {
@@ -446,9 +435,8 @@ inline Dtype Layer<Dtype>::Forward(const vector<Blob<Dtype>*>& bottom,
 }
 
 template <typename Dtype>
-inline void Layer<Dtype>::Backward(const vector<Blob<Dtype>*>& top,
-    const vector<bool>& propagate_down,
-    const vector<Blob<Dtype>*>& bottom) {
+inline void Layer<Dtype>::Backward(const vector<Blob<Dtype>*> &top, const vector<bool> &propagate_down, const vector<Blob<Dtype>*> &bottom)
+{
   switch (Caffe::mode()) {
   case Caffe::CPU:
     Backward_cpu(top, propagate_down, bottom);
@@ -463,7 +451,8 @@ inline void Layer<Dtype>::Backward(const vector<Blob<Dtype>*>& top,
 
 // Serialize LayerParameter to protocol buffer
 template <typename Dtype>
-void Layer<Dtype>::ToProto(LayerParameter* param, bool write_diff) {
+void Layer<Dtype>::ToProto(LayerParameter *param, bool write_diff)
+{
   param->Clear();
   param->CopyFrom(layer_param_);
   param->clear_blobs();
@@ -472,6 +461,5 @@ void Layer<Dtype>::ToProto(LayerParameter* param, bool write_diff) {
   }
 }
 
-}  // namespace caffe
-
-#endif  // CAFFE_LAYER_H_
+}
+#endif
