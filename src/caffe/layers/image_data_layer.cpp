@@ -1,12 +1,10 @@
 #ifdef USE_OPENCV
 #include <opencv2/core/core.hpp>
-
 #include <fstream>  // NOLINT(readability/streams)
 #include <iostream>  // NOLINT(readability/streams)
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "caffe/data_transformer.hpp"
 #include "caffe/layers/base_data_layer.hpp"
 #include "caffe/layers/image_data_layer.hpp"
@@ -18,21 +16,21 @@
 namespace caffe {
 
 template <typename Dtype>
-ImageDataLayer<Dtype>::~ImageDataLayer<Dtype>() {
+ImageDataLayer<Dtype>::~ImageDataLayer<Dtype>()
+{
   this->StopInternalThread();
 }
 
 template <typename Dtype>
-void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {
+void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top)
+{
   const int new_height = this->layer_param_.image_data_param().new_height();
   const int new_width  = this->layer_param_.image_data_param().new_width();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
-  CHECK((new_height == 0 && new_width == 0) ||
-      (new_height > 0 && new_width > 0)) << "Current implementation requires "
-      "new_height and new_width to be set at the same time.";
+  CHECK((new_height==0 && new_width==0) || (new_height>0 && new_width>0))
+    << "Current implementation requires new_height and new_width to be set at the same time.";
   // Read the file with filenames and labels
   const string& source = this->layer_param_.image_data_param().source();
   LOG(INFO) << "Opening file " << source;
@@ -40,7 +38,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   string line;
   size_t pos;
   int label;
-  while (std::getline(infile, line)) {
+  while(std::getline(infile, line)) {
     pos = line.find_last_of(' ');
     label = atoi(line.substr(pos + 1).c_str());
     lines_.push_back(std::make_pair(line.substr(0, pos), label));
@@ -48,7 +46,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
   CHECK(!lines_.empty()) << "File is empty";
 
-  if (this->layer_param_.image_data_param().shuffle()) {
+  if(this->layer_param_.image_data_param().shuffle()) {
     // randomly shuffle data
     LOG(INFO) << "Shuffling data";
     const unsigned int prefetch_rng_seed = caffe_rng_rand();
@@ -64,16 +62,14 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
   lines_id_ = 0;
   // Check if we would need to randomly skip a few data points
-  if (this->layer_param_.image_data_param().rand_skip()) {
-    unsigned int skip = caffe_rng_rand() %
-        this->layer_param_.image_data_param().rand_skip();
+  if(this->layer_param_.image_data_param().rand_skip()) {
+    unsigned int skip = caffe_rng_rand() % this->layer_param_.image_data_param().rand_skip();
     LOG(INFO) << "Skipping first " << skip << " data points.";
     CHECK_GT(lines_.size(), skip) << "Not enough points to skip";
     lines_id_ = skip;
   }
   // Read an image, and use it to initialize the top blob.
-  cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-                                    new_height, new_width, is_color);
+  cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first, new_height, new_width, is_color);
   CHECK(cv_img.data) << "Could not load " << lines_[lines_id_].first;
   // Use data_transformer to infer the expected blob shape from a cv_image.
   vector<int> top_shape = this->data_transformer_->InferBlobShape(cv_img);
@@ -82,7 +78,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   const int batch_size = this->layer_param_.image_data_param().batch_size();
   CHECK_GT(batch_size, 0) << "Positive batch size required";
   top_shape[0] = batch_size;
-  for (int i = 0; i < this->prefetch_.size(); ++i) {
+  for(int i=0; i<this->prefetch_.size(); ++i) {
     this->prefetch_[i]->data_.Reshape(top_shape);
   }
   top[0]->Reshape(top_shape);
@@ -93,21 +89,22 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   // label
   vector<int> label_shape(1, batch_size);
   top[1]->Reshape(label_shape);
-  for (int i = 0; i < this->prefetch_.size(); ++i) {
+  for(int i=0; i<this->prefetch_.size(); ++i) {
     this->prefetch_[i]->label_.Reshape(label_shape);
   }
 }
 
 template <typename Dtype>
-void ImageDataLayer<Dtype>::ShuffleImages() {
-  caffe::rng_t* prefetch_rng =
-      static_cast<caffe::rng_t*>(prefetch_rng_->generator());
+void ImageDataLayer<Dtype>::ShuffleImages()
+{
+  caffe::rng_t* prefetch_rng = static_cast<caffe::rng_t*>(prefetch_rng_->generator());
   shuffle(lines_.begin(), lines_.end(), prefetch_rng);
 }
 
 // This function is called on prefetch thread
 template <typename Dtype>
-void ImageDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
+void ImageDataLayer<Dtype>::load_batch(Batch<Dtype> *batch)
+{
   CPUTimer batch_timer;
   batch_timer.Start();
   double read_time = 0;
@@ -124,8 +121,7 @@ void ImageDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
   // Reshape according to the first image of each batch
   // on single input batches allows for inputs of varying dimension.
-  cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-      new_height, new_width, is_color);
+  cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first, new_height, new_width, is_color);
   CHECK(cv_img.data) << "Could not load " << lines_[lines_id_].first;
   // Use data_transformer to infer the expected blob shape from a cv_img.
   vector<int> top_shape = this->data_transformer_->InferBlobShape(cv_img);
@@ -139,12 +135,11 @@ void ImageDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
   // datum scales
   const int lines_size = lines_.size();
-  for (int item_id = 0; item_id < batch_size; ++item_id) {
+  for(int item_id=0; item_id<batch_size; ++item_id) {
     // get a blob
     timer.Start();
     CHECK_GT(lines_size, lines_id_);
-    cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-        new_height, new_width, is_color);
+    cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first, new_height, new_width, is_color);
     CHECK(cv_img.data) << "Could not load " << lines_[lines_id_].first;
     read_time += timer.MicroSeconds();
     timer.Start();
@@ -157,11 +152,11 @@ void ImageDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
     prefetch_label[item_id] = lines_[lines_id_].second;
     // go to the next iter
     lines_id_++;
-    if (lines_id_ >= lines_size) {
+    if(lines_id_ >= lines_size) {
       // We have reached the end. Restart from the first.
       DLOG(INFO) << "Restarting data prefetching from start.";
       lines_id_ = 0;
-      if (this->layer_param_.image_data_param().shuffle()) {
+      if(this->layer_param_.image_data_param().shuffle()) {
         ShuffleImages();
       }
     }
@@ -176,4 +171,4 @@ INSTANTIATE_CLASS(ImageDataLayer);
 REGISTER_LAYER_CLASS(ImageData);
 
 }  // namespace caffe
-#endif  // USE_OPENCV
+#endif

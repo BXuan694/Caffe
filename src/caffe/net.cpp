@@ -382,7 +382,8 @@ int Net<Dtype>::AppendBottom(const NetParameter &param, const int layer_id, cons
 }
 
 template <typename Dtype>
-void Net<Dtype>::AppendParam(const NetParameter &param, const int layer_id, const int param_id) {
+void Net<Dtype>::AppendParam(const NetParameter &param, const int layer_id, const int param_id)
+{
   const LayerParameter& layer_param = layers_[layer_id]->layer_param();
   const int param_size = layer_param.param_size();
   string param_name =
@@ -531,10 +532,11 @@ const vector<Blob<Dtype>*>& Net<Dtype>::Forward(const vector<Blob<Dtype>*> &bott
 }
 
 template <typename Dtype>
-void Net<Dtype>::BackwardFromTo(int start, int end) {
+void Net<Dtype>::BackwardFromTo(int start, int end)
+{
   CHECK_GE(end, 0);
   CHECK_LT(start, layers_.size());
-  for(int i = start; i >= end; --i) {
+  for(int i=start; i>=end; --i) {
     for(int c = 0; c < before_backward_.size(); ++c) {
       before_backward_[c]->run(i);
     }
@@ -629,10 +631,10 @@ void Net<Dtype>::UpdateDebugInfo(const int param_id)
 }
 
 template <typename Dtype>
-void Net<Dtype>::ShareTrainedLayersWith(const Net* other)
+void Net<Dtype>::ShareTrainedLayersWith(const Net *other)
 {
   int num_source_layers = other->layers().size();
-  for(int i = 0; i < num_source_layers; ++i) {
+  for(int i=0; i<num_source_layers; ++i) {
     Layer<Dtype>* source_layer = other->layers()[i].get();
     const string& source_layer_name = other->layer_names()[i];
     int target_layer_id = 0;
@@ -691,14 +693,15 @@ void Net<Dtype>::Backward()
 }
 
 template <typename Dtype>
-void Net<Dtype>::Reshape() {
-  for(int i = 0; i < layers_.size(); ++i) {
+void Net<Dtype>::Reshape()
+{
+  for(int i=0; i<layers_.size(); ++i) {
     layers_[i]->Reshape(bottom_vecs_[i], top_vecs_[i]);
   }
 }
 
 template <typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param)
+void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter &param)
 {
   int num_source_layers = param.layer_size();
   for(int i = 0; i < num_source_layers; ++i) {
@@ -867,8 +870,9 @@ void Net<Dtype>::Update()
 }
 
 template <typename Dtype>
-void Net<Dtype>::ClearParamDiffs() {
-  for(int i = 0; i < learnable_params_.size(); ++i) {
+void Net<Dtype>::ClearParamDiffs()
+{
+  for(int i=0; i<learnable_params_.size(); ++i) {
     Blob<Dtype>* blob = learnable_params_[i];
     switch (Caffe::mode()) {
     case Caffe::CPU:
@@ -902,7 +906,7 @@ bool Net<Dtype>::has_blob(const string &blob_name) const
 }
 
 template <typename Dtype>
-const shared_ptr<Blob<Dtype> > Net<Dtype>::blob_by_name(const string& blob_name) const
+const shared_ptr<Blob<Dtype> > Net<Dtype>::blob_by_name(const string &blob_name) const
 {
   shared_ptr<Blob<Dtype> > blob_ptr;
   if(has_blob(blob_name)) {

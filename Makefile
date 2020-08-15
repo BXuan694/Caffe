@@ -490,8 +490,7 @@ $(EXAMPLE_BINS): %.bin : %.o | $(DYNAMIC_NAME)
 
 proto: $(PROTO_GEN_CC) $(PROTO_GEN_HEADER)
 
-$(PROTO_BUILD_DIR)/%.pb.cc $(PROTO_BUILD_DIR)/%.pb.h : \
-		$(PROTO_SRC_DIR)/%.proto | $(PROTO_BUILD_DIR)
+$(PROTO_BUILD_DIR)/%.pb.cc $(PROTO_BUILD_DIR)/%.pb.h : $(PROTO_SRC_DIR)/%.proto | $(PROTO_BUILD_DIR)
 	@ echo PROTOC $<
 	$(Q)protoc --proto_path=$(PROTO_SRC_DIR) --cpp_out=$(PROTO_BUILD_DIR) $<
 
