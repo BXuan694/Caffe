@@ -8,10 +8,12 @@
 
 #include <fstream>  // NOLINT(readability/streams)
 #include <string>
+
 #include "boost/scoped_ptr.hpp"
 #include "glog/logging.h"
 #include "google/protobuf/text_format.h"
 #include "stdint.h"
+
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/db.hpp"
 #include "caffe/util/format.hpp"
@@ -35,8 +37,8 @@ void read_image(std::ifstream *file, int *label, char *buffer)
   return;
 }
 
-void convert_dataset(const string &input_folder, const string &output_folder, const string &db_type)
-{
+void convert_dataset(const string& input_folder, const string& output_folder,
+    const string& db_type) {
   scoped_ptr<db::DB> train_db(db::GetDB(db_type));
   train_db->Open(output_folder + "/cifar10_train_" + db_type, db::NEW);
   scoped_ptr<db::Transaction> txn(train_db->NewTransaction());
@@ -49,19 +51,21 @@ void convert_dataset(const string &input_folder, const string &output_folder, co
   datum.set_width(kCIFARSize);
 
   LOG(INFO) << "Writing Training data";
-  for(int fileid=0; fileid<kCIFARTrainBatches; ++fileid) {
+  for (int fileid = 0; fileid < kCIFARTrainBatches; ++fileid) {
     // Open files
     LOG(INFO) << "Training Batch " << fileid + 1;
-    string batchFileName = input_folder + "/data_batch_" + caffe::format_int(fileid+1) + ".bin";
-    std::ifstream data_file(batchFileName.c_str(), std::ios::in | std::ios::binary);
+    string batchFileName = input_folder + "/data_batch_"
+      + caffe::format_int(fileid+1) + ".bin";
+    std::ifstream data_file(batchFileName.c_str(),
+        std::ios::in | std::ios::binary);
     CHECK(data_file) << "Unable to open train file #" << fileid + 1;
-    for(int itemid=0; itemid<kCIFARBatchSize; ++itemid) {
+    for (int itemid = 0; itemid < kCIFARBatchSize; ++itemid) {
       read_image(&data_file, &label, str_buffer);
       datum.set_label(label);
       datum.set_data(str_buffer, kCIFARImageNBytes);
       string out;
       CHECK(datum.SerializeToString(&out));
-      txn->Put(caffe::format_int(fileid*kCIFARBatchSize+itemid, 5), out);
+      txn->Put(caffe::format_int(fileid * kCIFARBatchSize + itemid, 5), out);
     }
   }
   txn->Commit();
@@ -72,9 +76,10 @@ void convert_dataset(const string &input_folder, const string &output_folder, co
   test_db->Open(output_folder + "/cifar10_test_" + db_type, db::NEW);
   txn.reset(test_db->NewTransaction());
   // Open files
-  std::ifstream data_file((input_folder + "/test_batch.bin").c_str(), std::ios::in|std::ios::binary);
+  std::ifstream data_file((input_folder + "/test_batch.bin").c_str(),
+      std::ios::in | std::ios::binary);
   CHECK(data_file) << "Unable to open test file.";
-  for(int itemid=0; itemid<kCIFARBatchSize; ++itemid) {
+  for (int itemid = 0; itemid < kCIFARBatchSize; ++itemid) {
     read_image(&data_file, &label, str_buffer);
     datum.set_label(label);
     datum.set_data(str_buffer, kCIFARImageNBytes);
@@ -86,11 +91,10 @@ void convert_dataset(const string &input_folder, const string &output_folder, co
   test_db->Close();
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   FLAGS_alsologtostderr = 1;
 
-  if(argc!=4) {
+  if (argc != 4) {
     printf("This script converts the CIFAR dataset to the leveldb format used\n"
            "by caffe to perform classification.\n"
            "Usage:\n"
@@ -99,8 +103,7 @@ int main(int argc, char** argv)
            "The CIFAR dataset could be downloaded at\n"
            "    http://www.cs.toronto.edu/~kriz/cifar.html\n"
            "You should gunzip them after downloading.\n");
-  }
-  else {
+  } else {
     google::InitGoogleLogging(argv[0]);
     convert_dataset(string(argv[1]), string(argv[2]), string(argv[3]));
   }

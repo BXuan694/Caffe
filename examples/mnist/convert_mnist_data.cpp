@@ -18,7 +18,6 @@
 
 #include <stdint.h>
 #include <sys/stat.h>
-
 #include <fstream>  // NOLINT(readability/streams)
 #include <string>
 
@@ -35,13 +34,14 @@ using std::string;
 
 DEFINE_string(backend, "lmdb", "The backend for storing the result");
 
-uint32_t swap_endian(uint32_t val) {
-    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
-    return (val << 16) | (val >> 16);
+uint32_t swap_endian(uint32_t val)
+{
+  val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+  return (val << 16) | (val >> 16);
 }
 
-void convert_dataset(const char* image_filename, const char* label_filename,
-        const char* db_path, const string& db_backend) {
+void convert_dataset(const char *image_filename, const char *label_filename, const char *db_path, const string &db_backend)
+{
   // Open files
   std::ifstream image_file(image_filename, std::ios::in | std::ios::binary);
   std::ifstream label_file(label_filename, std::ios::in | std::ios::binary);
@@ -87,7 +87,7 @@ void convert_dataset(const char* image_filename, const char* label_filename,
   datum.set_width(cols);
   LOG(INFO) << "A total of " << num_items << " items.";
   LOG(INFO) << "Rows: " << rows << " Cols: " << cols;
-  for (int item_id = 0; item_id < num_items; ++item_id) {
+  for(int item_id=0; item_id<num_items; ++item_id) {
     image_file.read(pixels, rows * cols);
     label_file.read(&label, 1);
     datum.set_data(pixels, rows*cols);
@@ -97,13 +97,13 @@ void convert_dataset(const char* image_filename, const char* label_filename,
 
     txn->Put(key_str, value);
 
-    if (++count % 1000 == 0) {
+    if(++count%1000==0) {
       txn->Commit();
     }
   }
   // write the last batch
-  if (count % 1000 != 0) {
-      txn->Commit();
+  if(count%1000!=0) {
+    txn->Commit();
   }
   LOG(INFO) << "Processed " << count << " files.";
   delete[] pixels;
@@ -130,10 +130,10 @@ int main(int argc, char** argv) {
 
   const string& db_backend = FLAGS_backend;
 
-  if (argc != 4) {
-    gflags::ShowUsageWithFlagsRestrict(argv[0],
-        "examples/mnist/convert_mnist_data");
-  } else {
+  if(argc!=4) {
+    gflags::ShowUsageWithFlagsRestrict(argv[0], "examples/mnist/convert_mnist_data");
+  }
+  else {
     google::InitGoogleLogging(argv[0]);
     convert_dataset(argv[1], argv[2], argv[3], db_backend);
   }
@@ -141,7 +141,6 @@ int main(int argc, char** argv) {
 }
 #else
 int main(int argc, char** argv) {
-  LOG(FATAL) << "This example requires LevelDB and LMDB; " <<
-  "compile with USE_LEVELDB and USE_LMDB.";
+  LOG(FATAL) << "This example requires LevelDB and LMDB; compile with USE_LEVELDB and USE_LMDB.";
 }
 #endif  // USE_LEVELDB and USE_LMDB

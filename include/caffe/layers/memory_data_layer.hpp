@@ -16,7 +16,7 @@ namespace caffe {
  */
 template <typename Dtype>
 class MemoryDataLayer : public BaseDataLayer<Dtype> {
- public:
+public:
   explicit MemoryDataLayer(const LayerParameter &param) : BaseDataLayer<Dtype>(param), has_new_data_(false) {}
   virtual void DataLayerSetUp(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top);
 
@@ -39,7 +39,7 @@ class MemoryDataLayer : public BaseDataLayer<Dtype> {
   int height() { return height_; }
   int width() { return width_; }
 
- protected:
+protected:
   virtual void Forward_cpu(const vector<Blob<Dtype>*> &bottom, const vector<Blob<Dtype>*> &top);
 
   int batch_size_, channels_, height_, width_, size_;

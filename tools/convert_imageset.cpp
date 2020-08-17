@@ -17,7 +17,6 @@
 #include "boost/scoped_ptr.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
-
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/db.hpp"
 #include "caffe/util/format.hpp"
@@ -28,22 +27,17 @@ using namespace caffe;  // NOLINT(build/namespaces)
 using std::pair;
 using boost::scoped_ptr;
 
-DEFINE_bool(gray, false,
-    "When this option is on, treat images as grayscale ones");
-DEFINE_bool(shuffle, false,
-    "Randomly shuffle the order of images and their labels");
-DEFINE_string(backend, "lmdb",
-        "The backend {lmdb, leveldb} for storing the result");
+DEFINE_bool(gray, false, "When this option is on, treat images as grayscale ones");
+DEFINE_bool(shuffle, false, "Randomly shuffle the order of images and their labels");
+DEFINE_string(backend, "lmdb", "The backend {lmdb, leveldb} for storing the result");
 DEFINE_int32(resize_width, 0, "Width images are resized to");
 DEFINE_int32(resize_height, 0, "Height images are resized to");
-DEFINE_bool(check_size, false,
-    "When this option is on, check that all the datum have the same size");
-DEFINE_bool(encoded, false,
-    "When this option is on, the encoded image will be save in datum");
-DEFINE_string(encode_type, "",
-    "Optional: What type should we encode the image as ('png','jpg',...).");
+DEFINE_bool(check_size, false, "When this option is on, check that all the datum have the same size");
+DEFINE_bool(encoded, false, "When this option is on, the encoded image will be save in datum");
+DEFINE_string(encode_type, "", "Optional: What type should we encode the image as ('png','jpg',...).");
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
 #ifdef USE_OPENCV
   ::google::InitGoogleLogging(argv[0]);
   // Print output to stderr (while still logging)
@@ -76,20 +70,19 @@ int main(int argc, char** argv) {
   std::string line;
   size_t pos;
   int label;
-  while (std::getline(infile, line)) {
+  while(std::getline(infile, line)) {
     pos = line.find_last_of(' ');
     label = atoi(line.substr(pos + 1).c_str());
     lines.push_back(std::make_pair(line.substr(0, pos), label));
   }
-  if (FLAGS_shuffle) {
+  if(FLAGS_shuffle) {
     // randomly shuffle data
     LOG(INFO) << "Shuffling data";
     shuffle(lines.begin(), lines.end());
   }
   LOG(INFO) << "A total of " << lines.size() << " images.";
 
-  if (encode_type.size() && !encoded)
-    LOG(INFO) << "encode_type specified, assuming encoded=true.";
+  if(encode_type.size()&&!encoded) LOG(INFO) << "encode_type specified, assuming encoded=true.";
 
   int resize_height = std::max<int>(0, FLAGS_resize_height);
   int resize_width = std::max<int>(0, FLAGS_resize_width);
@@ -106,30 +99,27 @@ int main(int argc, char** argv) {
   int data_size = 0;
   bool data_size_initialized = false;
 
-  for (int line_id = 0; line_id < lines.size(); ++line_id) {
+  for(int line_id=0; line_id<lines.size(); ++line_id) {
     bool status;
     std::string enc = encode_type;
-    if (encoded && !enc.size()) {
+    if(encoded&&!enc.size()) {
       // Guess the encoding type from the file name
       string fn = lines[line_id].first;
       size_t p = fn.rfind('.');
-      if ( p == fn.npos )
-        LOG(WARNING) << "Failed to guess the encoding of '" << fn << "'";
+      if(p==fn.npos) LOG(WARNING) << "Failed to guess the encoding of '" << fn << "'";
       enc = fn.substr(p);
       std::transform(enc.begin(), enc.end(), enc.begin(), ::tolower);
     }
-    status = ReadImageToDatum(root_folder + lines[line_id].first,
-        lines[line_id].second, resize_height, resize_width, is_color,
-        enc, &datum);
-    if (status == false) continue;
-    if (check_size) {
-      if (!data_size_initialized) {
+    status = ReadImageToDatum(root_folder + lines[line_id].first, lines[line_id].second, resize_height, resize_width, is_color, enc, &datum);
+    if(status==false) continue;
+    if(check_size) {
+      if(!data_size_initialized) {
         data_size = datum.channels() * datum.height() * datum.width();
         data_size_initialized = true;
-      } else {
+      }
+      else {
         const std::string& data = datum.data();
-        CHECK_EQ(data.size(), data_size) << "Incorrect data field size "
-            << data.size();
+        CHECK_EQ(data.size(), data_size) << "Incorrect data field size " << data.size();
       }
     }
     // sequential
@@ -140,7 +130,7 @@ int main(int argc, char** argv) {
     CHECK(datum.SerializeToString(&out));
     txn->Put(key_str, out);
 
-    if (++count % 1000 == 0) {
+    if(++count%1000==0) {
       // Commit db
       txn->Commit();
       txn.reset(db->NewTransaction());
@@ -148,7 +138,7 @@ int main(int argc, char** argv) {
     }
   }
   // write the last batch
-  if (count % 1000 != 0) {
+  if(count%1000!=0) {
     txn->Commit();
     LOG(INFO) << "Processed " << count << " files.";
   }
