@@ -46,13 +46,8 @@ required in order to map a prediction to the name of the class:
 ```
 Using the files that were downloaded, we can classify the provided cat
 image (`examples/images/cat.jpg`) using this command:
-```
-./build/examples/cpp_classification/classification.bin \
-  models/bvlc_reference_caffenet/deploy.prototxt \
-  models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel \
-  data/ilsvrc12/imagenet_mean.binaryproto \
-  data/ilsvrc12/synset_words.txt \
-  examples/images/cat.jpg
+```sh
+./examples/cpp_classification/clasifation.sh
 ```
 The output should look like this:
 ```

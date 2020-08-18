@@ -342,6 +342,8 @@ EVERYTHING_TARGETS := all py$(PROJECT) test warn lint
 
 all: lib tools examples
 
+run: lib tools examples test runtest
+
 lib: $(STATIC_NAME) $(DYNAMIC_NAME)
 
 everything: $(EVERYTHING_TARGETS)

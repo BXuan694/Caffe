@@ -7,7 +7,6 @@
 #include "boost/scoped_ptr.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
-
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/db.hpp"
 #include "caffe/util/io.hpp"
@@ -21,7 +20,8 @@ using boost::scoped_ptr;
 DEFINE_string(backend, "lmdb",
         "The backend {leveldb, lmdb} containing the images");
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
 #ifdef USE_OPENCV
   ::google::InitGoogleLogging(argv[0]);
   // Print output to stderr (while still logging)
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  if (argc < 2 || argc > 3) {
+  if(argc<2 || argc>3) {
     gflags::ShowUsageWithFlagsRestrict(argv[0], "tools/compute_image_mean");
     return 1;
   }
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
   Datum datum;
   datum.ParseFromString(cursor->value());
 
-  if (DecodeDatumNative(&datum)) {
+  if(DecodeDatumNative(&datum)) {
     LOG(INFO) << "Decoding Datum";
   }
 
@@ -62,49 +62,46 @@ int main(int argc, char** argv) {
   sum_blob.set_height(datum.height());
   sum_blob.set_width(datum.width());
   const int data_size = datum.channels() * datum.height() * datum.width();
-  int size_in_datum = std::max<int>(datum.data().size(),
-                                    datum.float_data_size());
-  for (int i = 0; i < size_in_datum; ++i) {
+  int size_in_datum = std::max<int>(datum.data().size(), datum.float_data_size());
+  for(int i=0; i<size_in_datum; ++i) {
     sum_blob.add_data(0.);
   }
   LOG(INFO) << "Starting iteration";
-  while (cursor->valid()) {
+  while(cursor->valid()) {
     Datum datum;
     datum.ParseFromString(cursor->value());
     DecodeDatumNative(&datum);
 
     const std::string& data = datum.data();
-    size_in_datum = std::max<int>(datum.data().size(),
-        datum.float_data_size());
-    CHECK_EQ(size_in_datum, data_size) << "Incorrect data field size " <<
-        size_in_datum;
-    if (data.size() != 0) {
+    size_in_datum = std::max<int>(datum.data().size(), datum.float_data_size());
+    CHECK_EQ(size_in_datum, data_size) << "Incorrect data field size " << size_in_datum;
+    if(data.size()!=0) {
       CHECK_EQ(data.size(), size_in_datum);
-      for (int i = 0; i < size_in_datum; ++i) {
+      for(int i=0; i<size_in_datum; ++i) {
         sum_blob.set_data(i, sum_blob.data(i) + (uint8_t)data[i]);
       }
-    } else {
+    }
+    else {
       CHECK_EQ(datum.float_data_size(), size_in_datum);
-      for (int i = 0; i < size_in_datum; ++i) {
-        sum_blob.set_data(i, sum_blob.data(i) +
-            static_cast<float>(datum.float_data(i)));
+      for(int i=0; i<size_in_datum; ++i) {
+        sum_blob.set_data(i, sum_blob.data(i) + static_cast<float>(datum.float_data(i)));
       }
     }
     ++count;
-    if (count % 10000 == 0) {
+    if(count%10000==0) {
       LOG(INFO) << "Processed " << count << " files.";
     }
     cursor->Next();
   }
 
-  if (count % 10000 != 0) {
+  if(count%10000!=0) {
     LOG(INFO) << "Processed " << count << " files.";
   }
-  for (int i = 0; i < sum_blob.data_size(); ++i) {
+  for(int i=0; i<sum_blob.data_size(); ++i) {
     sum_blob.set_data(i, sum_blob.data(i) / count);
   }
   // Write to disk
-  if (argc == 3) {
+  if(argc==3) {
     LOG(INFO) << "Write to " << argv[2];
     WriteProtoToBinaryFile(sum_blob, argv[2]);
   }
@@ -112,8 +109,8 @@ int main(int argc, char** argv) {
   const int dim = sum_blob.height() * sum_blob.width();
   std::vector<float> mean_values(channels, 0.0);
   LOG(INFO) << "Number of channels: " << channels;
-  for (int c = 0; c < channels; ++c) {
-    for (int i = 0; i < dim; ++i) {
+  for(int c=0; c<channels; ++c) {
+    for(int i=0; i<dim; ++i) {
       mean_values[c] += sum_blob.data(dim * c + i);
     }
     LOG(INFO) << "mean_value channel [" << c << "]: " << mean_values[c] / dim;

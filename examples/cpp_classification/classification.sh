@@ -1,0 +1,1 @@
+./build/examples/cpp_classification/classification.bin models/bvlc_reference_caffenet/deploy.prototxt /media/this/EE10724E10721DB1/model/bvlc_reference_caffenet.caffemodel $DATA_ROOT/ilsvrc/caffe_ilsvrc12/imagenet_mean.binaryproto $DATA_ROOT/ilsvrc/caffe_ilsvrc12/synset_words.txt examples/images/cat.jpg

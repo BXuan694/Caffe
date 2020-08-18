@@ -23,8 +23,7 @@ def reporthook(count, block_size, total_size):
     progress_size = int(count * block_size)
     speed = int(progress_size / (1024 * duration))
     percent = int(count * block_size * 100 / total_size)
-    sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds passed" %
-                    (percent, progress_size / (1024 * 1024), speed, duration))
+    sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds passed" % (percent, progress_size / (1024 * 1024), speed, duration))
     sys.stdout.flush()
 
 
@@ -44,13 +43,11 @@ def valid_dirname(dirname):
         return parse_readme_frontmatter(dirname)
     except Exception as e:
         print('ERROR: {}'.format(e))
-        raise argparse.ArgumentTypeError(
-            'Must be valid Caffe model directory with a correct readme.md')
+        raise argparse.ArgumentTypeError('Must be valid Caffe model directory with a correct readme.md')
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Download trained model binary.')
+    parser = argparse.ArgumentParser(description='Download trained model binary.')
     parser.add_argument('dirname', type=valid_dirname)
     args = parser.parse_args()
 
@@ -70,8 +67,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     # Download and verify model.
-    urllib.request.urlretrieve(
-        frontmatter['caffemodel_url'], model_filename, reporthook)
+    urllib.request.urlretrieve(frontmatter['caffemodel_url'], model_filename, reporthook)
     if not model_checks_out():
         print('ERROR: model did not download correctly! Run this again.')
         sys.exit(1)

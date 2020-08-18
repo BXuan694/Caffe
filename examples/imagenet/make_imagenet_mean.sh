@@ -1,11 +1,12 @@
 #!/usr/bin/env sh
 # Compute the mean image from the imagenet training lmdb
-# N.B. this is available in data/ilsvrc12
 
-EXAMPLE=examples/imagenet
-DATA=data/ilsvrc12
-TOOLS=build/tools
+# result from val lmdb is:
+# mean_value channel [0]: 102.172
+# mean_value channel [1]: 114.677
+# mean_value channel [2]: 120.494
 
-$TOOLS/compute_image_mean $EXAMPLE/ilsvrc12_train_lmdb $DATA/imagenet_mean.binaryproto
+
+build/tools/compute_image_mean $DATA_ROOT/ilsvrc/ilsvrc12_val_lmdb $DATA_ROOT/ilsvrc/imagenet_mean.binaryproto
 
 echo "Done."
