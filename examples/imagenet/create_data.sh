@@ -41,7 +41,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_width=$RESIZE_WIDTH \
     --shuffle \
     $VAL_DATA_ROOT \
-    $DATA_ROOT/ilsvrc/caffe_ilsvrc12/val.txt \
+    $DATA_ROOT/ilsvrc/caffe_ilsvrc12/val_new.txt \
     $DATA_ROOT/ilsvrc/ilsvrc12_val_lmdb
 
 echo "Creating train lmdb..."
@@ -51,7 +51,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_width=$RESIZE_WIDTH \
     --shuffle \
     $TRAIN_DATA_ROOT \
-    $DATA_ROOT/ilsvrc/caffe_ilsvrc12/train.txt \
+    $DATA_ROOT/ilsvrc/caffe_ilsvrc12/train_new.txt \
     $DATA_ROOT/ilsvrc/ilsvrc12_train_lmdb
 
 echo "Done."
