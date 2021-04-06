@@ -1,5 +1,6 @@
 #!/bin/bash
-
+DATA_ROOT=/mnt/data
+CAFFE_ROOT=/home/ws/Caffe
 root_dir=$DATA_ROOT/pascalvoc/VOCdevkit
 sub_dir=ImageSets/Main
 bash_dir=$DATA_ROOT/pascalvoc

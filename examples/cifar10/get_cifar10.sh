@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # This scripts downloads the CIFAR10 (binary version) data and unzips it.
 
-mkdir $DATA_ROOT/cifar10
+#mkdir $DATA_ROOT/cifar10
 cd $DATA_ROOT/cifar10
 
 echo "Downloading..."

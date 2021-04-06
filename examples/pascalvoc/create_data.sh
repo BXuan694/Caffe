@@ -1,3 +1,5 @@
+CAFFE_ROOT=/home/ws/Caffe
+DATA_ROOT=/mnt/data
 cd $CAFFE_ROOT
 redo=1
 dataset_name="pascalvoc"
